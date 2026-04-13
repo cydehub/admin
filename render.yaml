@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: stockzeno-wms
+    env: java
+    plan: free
+    buildCommand: mvn -DskipTests package
+    startCommand: java -jar target/wms-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: DB_URL
+        fromDatabase:
+          name: stockzeno-db
+          property: connectionString
+      - key: DB_USER
+        fromDatabase:
+          name: stockzeno-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: stockzeno-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+
+
+databases:
+  - name: stockzeno-db
+    databaseName: stockzeno
+    user: stockzeno
+    plan: free
