@@ -1,0 +1,23 @@
+# Maven
+/target/
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+*.ipr
+*.iws
+/.settings/
+/.classpath
+/.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Env
+.env
+.env.*
