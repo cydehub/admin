@@ -1,23 +1,36 @@
 # Stockzeno WMS Backend
 
-Spring Boot 3.x + Java 21 backend for the Stockzeno Warehouse Management System.
+Spring Boot 3.x + Java 21 backend (with a static SPA dashboard) for the Stockzeno Warehouse Management System.
 
-## Local Setup
+## Local Setup (no Docker required)
 
-1. Start infrastructure:
-   ```bash
-   docker compose up -d
+1. Install prerequisites:
+   - **Java 21** (Temurin or equivalent)
+   - **PostgreSQL 16**
+
+2. Create the database/user (defaults used by the app):
+   ```sql
+   CREATE USER stockzeno WITH PASSWORD 'stockzeno';
+   CREATE DATABASE stockzeno OWNER stockzeno;
    ```
-2. Copy environment defaults:
-   ```bash
-   cp .env.example .env
-   ```
+
 3. Run the app:
    ```bash
-   ./mvnw spring-boot:run
+   mvn spring-boot:run
    ```
 
-Swagger UI: `http://localhost:8080/docs`
+### URLs
+- Landing page: `http://localhost:8080/`
+- Dashboard: `http://localhost:8080/app.html`
+- Swagger UI: `http://localhost:8080/docs`
+
+### Seed Admin
+- Email: `admin@stockzeno.local`
+- Password: `ChangeMe123!`
+
+### Redis (optional)
+Redis is disabled by default for local dev. If you want to enable it, re-enable Redis auto-config in
+`src/main/resources/application.yml` and set `spring.cache.type=redis`.
 
 ## Webhook signature verification
 
@@ -65,9 +78,10 @@ digest = hmac.new(secret.encode("utf-8"), raw_body, hashlib.sha256).hexdigest()
 signature = f"sha256={digest}"
 ```
 
-## Modules (planned)
+## Modules
 - Authentication + RBAC
 - Inventory + batch management
+- Location hierarchy (warehouse/building/aisle/shelf/bin)
 - Audit logging
 - Analytics + reorder suggestions
 - Webhooks + notifications
