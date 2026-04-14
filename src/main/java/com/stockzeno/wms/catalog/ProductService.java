@@ -43,7 +43,7 @@ public class ProductService {
     @Transactional
     public ProductResponse update(@NonNull UUID id, ProductRequest request) {
         Product product = resolveProduct(id);
-        applyRequest(product, request);
+        applyRequest(Objects.requireNonNull(product, "product"), request);
         return toResponse(Objects.requireNonNull(productRepository.save(product), "product"));
     }
 
