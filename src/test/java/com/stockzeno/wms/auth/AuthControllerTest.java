@@ -3,6 +3,7 @@ package com.stockzeno.wms.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stockzeno.wms.auth.dto.LoginRequest;
 import com.stockzeno.wms.auth.dto.RegisterRequest;
+import com.stockzeno.wms.identity.EmailVerificationTokenRepository;
 import com.stockzeno.wms.identity.Role;
 import com.stockzeno.wms.identity.RoleName;
 import com.stockzeno.wms.identity.RoleRepository;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -29,6 +31,9 @@ class AuthControllerTest {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private EmailVerificationTokenRepository verificationTokenRepository;
+
     @Test
     void registerAndLogin() throws Exception {
         roleRepository.save(new Role(RoleName.STAFF));
@@ -42,6 +47,15 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isOk());
+
+        String token = verificationTokenRepository.findAll().stream()
+                .findFirst()
+                .orElseThrow()
+                .getToken();
+
+        mockMvc.perform(get("/auth/verify")
+                        .param("token", token))
                 .andExpect(status().isOk());
 
         LoginRequest loginRequest = new LoginRequest();

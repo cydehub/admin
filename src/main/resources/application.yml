@@ -57,12 +57,15 @@ springdoc:
     operationsSorter: method
 
 stockzeno:
+  app:
+    frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:8080}
   security:
     jwt:
       issuer: ${JWT_ISSUER:stockzeno}
       secret: ${JWT_SECRET:}
       access-token-ttl: ${JWT_ACCESS_TTL:PT24H}
       refresh-token-ttl: ${JWT_REFRESH_TTL:P7D}
+      email-verification-ttl: ${EMAIL_VERIFICATION_TTL:PT24H}
   jobs:
     expiry-cron: ${EXPIRY_CRON:0 0 * * * *}
     low-stock-cron: ${LOW_STOCK_CRON:0 */30 * * * *}

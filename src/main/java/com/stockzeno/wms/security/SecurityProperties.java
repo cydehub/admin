@@ -9,6 +9,7 @@ public class SecurityProperties {
     private String issuer;
     private Duration accessTokenTtl;
     private Duration refreshTokenTtl;
+    private Duration emailVerificationTtl = Duration.ofHours(24);
     private String secret;
 
     public String getIssuer() {
@@ -33,6 +34,14 @@ public class SecurityProperties {
 
     public void setRefreshTokenTtl(Duration refreshTokenTtl) {
         this.refreshTokenTtl = refreshTokenTtl;
+    }
+
+    public Duration getEmailVerificationTtl() {
+        return emailVerificationTtl;
+    }
+
+    public void setEmailVerificationTtl(Duration emailVerificationTtl) {
+        this.emailVerificationTtl = emailVerificationTtl;
     }
 
     public String getSecret() {
