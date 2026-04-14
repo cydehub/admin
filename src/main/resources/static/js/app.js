@@ -5,6 +5,10 @@ const state = {
   roles: JSON.parse(localStorage.getItem("userRoles") || "[]"),
 };
 
+const apiBase = (window.STOCKZENO_API_BASE
+  || document.querySelector('meta[name="stockzeno-api-base"]')?.content
+  || "").replace(/\/$/, "");
+
 const authOverlay = document.getElementById("authOverlay");
 const authError = document.getElementById("authError");
 const statusBanner = document.getElementById("statusBanner");
@@ -39,7 +43,7 @@ const apiFetch = async (path, options = {}) => {
   if (state.accessToken) {
     headers.Authorization = `Bearer ${state.accessToken}`;
   }
-  const response = await fetch(path, { ...options, headers });
+  const response = await fetch(`${apiBase}${path}`, { ...options, headers });
   if (response.status === 401) {
     throw new Error("unauthorized");
   }
