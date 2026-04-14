@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -187,11 +188,11 @@ public class InventoryMonitoringService {
         }
     }
 
-    private AuditLog buildAudit(AuditAction action,
-                                AuditEntityType entityType,
-                                java.util.UUID entityId,
-                                BigDecimal quantityDelta,
-                                String reasonCode) {
+    private @NonNull AuditLog buildAudit(AuditAction action,
+                                         AuditEntityType entityType,
+                                         java.util.UUID entityId,
+                                         BigDecimal quantityDelta,
+                                         String reasonCode) {
         AuditLog log = new AuditLog();
         log.setActionType(action);
         log.setEntityType(entityType);

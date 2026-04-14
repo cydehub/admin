@@ -4,6 +4,7 @@ import com.stockzeno.wms.location.dto.AisleRequest;
 import com.stockzeno.wms.location.dto.AisleResponse;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,16 +51,16 @@ public class AisleService {
 
     @Transactional
     public void delete(UUID id) {
-        aisleRepository.delete(resolveAisle(id));
+        aisleRepository.delete(Objects.requireNonNull(resolveAisle(id), "aisle"));
     }
 
     private Aisle resolveAisle(UUID id) {
-        return aisleRepository.findById(id)
+        return aisleRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aisle not found"));
     }
 
     private Building resolveBuilding(UUID id) {
-        return buildingRepository.findById(id)
+        return buildingRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Building not found"));
     }
 

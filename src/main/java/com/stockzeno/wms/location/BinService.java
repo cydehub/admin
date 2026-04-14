@@ -4,6 +4,7 @@ import com.stockzeno.wms.location.dto.BinRequest;
 import com.stockzeno.wms.location.dto.BinResponse;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,16 +51,16 @@ public class BinService {
 
     @Transactional
     public void delete(UUID id) {
-        binRepository.delete(resolveBin(id));
+        binRepository.delete(Objects.requireNonNull(resolveBin(id), "bin"));
     }
 
     private Bin resolveBin(UUID id) {
-        return binRepository.findById(id)
+        return binRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bin not found"));
     }
 
     private Shelf resolveShelf(UUID id) {
-        return shelfRepository.findById(id)
+        return shelfRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Shelf not found"));
     }
 

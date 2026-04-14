@@ -4,6 +4,7 @@ import com.stockzeno.wms.location.dto.BuildingRequest;
 import com.stockzeno.wms.location.dto.BuildingResponse;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -52,16 +53,16 @@ public class BuildingService {
 
     @Transactional
     public void delete(UUID id) {
-        buildingRepository.delete(resolveBuilding(id));
+        buildingRepository.delete(Objects.requireNonNull(resolveBuilding(id), "building"));
     }
 
     private Building resolveBuilding(UUID id) {
-        return buildingRepository.findById(id)
+        return buildingRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Building not found"));
     }
 
     private Warehouse resolveWarehouse(UUID id) {
-        return warehouseRepository.findById(id)
+        return warehouseRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Warehouse not found"));
     }
 

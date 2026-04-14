@@ -21,7 +21,9 @@ import com.stockzeno.wms.webhook.WebhookService;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Objects;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,9 +62,11 @@ public class InventoryService {
     @Transactional
     public StockInResponse stockIn(StockInRequest request, Authentication authentication) {
         validateDates(request.getManufactureDate(), request.getExpiryDate());
-        Product product = productRepository.findById(request.getProductId())
+        UUID productId = Objects.requireNonNull(request.getProductId(), "productId");
+        UUID binId = Objects.requireNonNull(request.getBinId(), "binId");
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        Bin bin = binRepository.findById(request.getBinId())
+        Bin bin = binRepository.findById(binId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bin not found"));
 
         Batch batch = batchRepository.findByProductIdAndBatchCode(product.getId(), request.getBatchCode())
@@ -110,19 +114,23 @@ public class InventoryService {
 
     @Transactional
     public TransferResponse transfer(TransferRequest request, Authentication authentication) {
-        if (request.getFromBinId().equals(request.getToBinId())) {
+        UUID productId = Objects.requireNonNull(request.getProductId(), "productId");
+        UUID batchId = Objects.requireNonNull(request.getBatchId(), "batchId");
+        UUID fromBinId = Objects.requireNonNull(request.getFromBinId(), "fromBinId");
+        UUID toBinId = Objects.requireNonNull(request.getToBinId(), "toBinId");
+        if (fromBinId.equals(toBinId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Source and destination bins must differ");
         }
 
-        InventoryBalance sourceBalance = balanceRepository.findForUpdate(request.getProductId(), request.getBatchId(), request.getFromBinId())
+        InventoryBalance sourceBalance = balanceRepository.findForUpdate(productId, batchId, fromBinId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Source inventory balance not found"));
 
         if (sourceBalance.getQuantityOnHand().compareTo(request.getQuantity()) < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient source quantity");
         }
 
-        InventoryBalance destinationBalance = balanceRepository.findForUpdate(request.getProductId(), request.getBatchId(), request.getToBinId())
-                .orElseGet(() -> createBalance(sourceBalance.getProduct(), sourceBalance.getBatch(), resolveBin(request.getToBinId())));
+        InventoryBalance destinationBalance = balanceRepository.findForUpdate(productId, batchId, toBinId)
+                .orElseGet(() -> createBalance(sourceBalance.getProduct(), sourceBalance.getBatch(), resolveBin(toBinId)));
 
         sourceBalance.setQuantityOnHand(sourceBalance.getQuantityOnHand().subtract(request.getQuantity()));
         destinationBalance.setQuantityOnHand(destinationBalance.getQuantityOnHand().add(request.getQuantity()));
@@ -169,7 +177,10 @@ public class InventoryService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Adjustment quantity cannot be zero");
         }
 
-        InventoryBalance balance = balanceRepository.findForUpdate(request.getProductId(), request.getBatchId(), request.getBinId())
+        UUID productId = Objects.requireNonNull(request.getProductId(), "productId");
+        UUID batchId = Objects.requireNonNull(request.getBatchId(), "batchId");
+        UUID binId = Objects.requireNonNull(request.getBinId(), "binId");
+        InventoryBalance balance = balanceRepository.findForUpdate(productId, batchId, binId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory balance not found"));
 
         BigDecimal newQuantity = balance.getQuantityOnHand().add(request.getQuantityDelta());
@@ -230,7 +241,7 @@ public class InventoryService {
         }
     }
 
-    private Bin resolveBin(UUID binId) {
+    private Bin resolveBin(@NonNull UUID binId) {
         return binRepository.findById(binId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bin not found"));
     }

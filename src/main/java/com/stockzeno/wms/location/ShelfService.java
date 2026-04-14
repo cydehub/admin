@@ -4,6 +4,7 @@ import com.stockzeno.wms.location.dto.ShelfRequest;
 import com.stockzeno.wms.location.dto.ShelfResponse;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,16 +51,16 @@ public class ShelfService {
 
     @Transactional
     public void delete(UUID id) {
-        shelfRepository.delete(resolveShelf(id));
+        shelfRepository.delete(Objects.requireNonNull(resolveShelf(id), "shelf"));
     }
 
     private Shelf resolveShelf(UUID id) {
-        return shelfRepository.findById(id)
+        return shelfRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Shelf not found"));
     }
 
     private Aisle resolveAisle(UUID id) {
-        return aisleRepository.findById(id)
+        return aisleRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aisle not found"));
     }
 

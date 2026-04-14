@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,7 +28,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponse get(UUID id) {
+    public ProductResponse get(@NonNull UUID id) {
         return toResponse(resolveProduct(id));
     }
 
@@ -39,18 +40,18 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse update(UUID id, ProductRequest request) {
+    public ProductResponse update(@NonNull UUID id, ProductRequest request) {
         Product product = resolveProduct(id);
         applyRequest(product, request);
         return toResponse(productRepository.save(product));
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(@NonNull UUID id) {
         productRepository.delete(resolveProduct(id));
     }
 
-    private Product resolveProduct(UUID id) {
+    private Product resolveProduct(@NonNull UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }

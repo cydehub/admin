@@ -7,8 +7,10 @@ import com.stockzeno.wms.inventory.dto.BatchResponse;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,13 +33,13 @@ public class BatchService {
     }
 
     @Transactional(readOnly = true)
-    public BatchResponse get(UUID id) {
+    public BatchResponse get(@NonNull UUID id) {
         return toResponse(resolveBatch(id));
     }
 
     @Transactional
     public BatchResponse create(BatchRequest request) {
-        Product product = resolveProduct(request.getProductId());
+        Product product = resolveProduct(Objects.requireNonNull(request.getProductId(), "productId"));
         validateDates(request.getManufactureDate(), request.getExpiryDate());
 
         Batch batch = new Batch();
@@ -47,9 +49,9 @@ public class BatchService {
     }
 
     @Transactional
-    public BatchResponse update(UUID id, BatchRequest request) {
+    public BatchResponse update(@NonNull UUID id, BatchRequest request) {
         Batch batch = resolveBatch(id);
-        Product product = resolveProduct(request.getProductId());
+        Product product = resolveProduct(Objects.requireNonNull(request.getProductId(), "productId"));
         validateDates(request.getManufactureDate(), request.getExpiryDate());
 
         batch.setProduct(product);
@@ -58,16 +60,16 @@ public class BatchService {
     }
 
     @Transactional
-    public void delete(UUID id) {
-        batchRepository.delete(resolveBatch(id));
+    public void delete(@NonNull UUID id) {
+        batchRepository.delete(Objects.requireNonNull(resolveBatch(id), "batch"));
     }
 
-    private Batch resolveBatch(UUID id) {
+    private Batch resolveBatch(@NonNull UUID id) {
         return batchRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Batch not found"));
     }
 
-    private Product resolveProduct(UUID id) {
+    private Product resolveProduct(@NonNull UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
