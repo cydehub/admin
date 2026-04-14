@@ -4,6 +4,7 @@ import com.stockzeno.wms.catalog.dto.ProductRequest;
 import com.stockzeno.wms.catalog.dto.ProductResponse;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -36,24 +37,24 @@ public class ProductService {
     public ProductResponse create(ProductRequest request) {
         Product product = new Product();
         applyRequest(product, request);
-        return toResponse(productRepository.save(product));
+        return toResponse(Objects.requireNonNull(productRepository.save(product), "product"));
     }
 
     @Transactional
     public ProductResponse update(@NonNull UUID id, ProductRequest request) {
         Product product = resolveProduct(id);
         applyRequest(product, request);
-        return toResponse(productRepository.save(product));
+        return toResponse(Objects.requireNonNull(productRepository.save(product), "product"));
     }
 
     @Transactional
     public void delete(@NonNull UUID id) {
-        productRepository.delete(resolveProduct(id));
+        productRepository.delete(Objects.requireNonNull(resolveProduct(id), "product"));
     }
 
-    private Product resolveProduct(@NonNull UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+    private @NonNull Product resolveProduct(@NonNull UUID id) {
+        return Objects.requireNonNull(productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found")), "product");
     }
 
     private void applyRequest(Product product, ProductRequest request) {

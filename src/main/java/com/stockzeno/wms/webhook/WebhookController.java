@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,7 +37,7 @@ public class WebhookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WebhookEndpointResponse> get(@PathVariable UUID id) {
+    public ResponseEntity<WebhookEndpointResponse> get(@PathVariable @NonNull UUID id) {
         return ResponseEntity.ok(managementService.get(id));
     }
 
@@ -46,18 +47,18 @@ public class WebhookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<WebhookEndpointResponse> update(@PathVariable UUID id,
+    public ResponseEntity<WebhookEndpointResponse> update(@PathVariable @NonNull UUID id,
                                                           @Valid @RequestBody WebhookEndpointRequest request) {
         return ResponseEntity.ok(managementService.update(id, request));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<WebhookEndpointResponse> updateStatus(@PathVariable UUID id, @RequestParam boolean active) {
+    public ResponseEntity<WebhookEndpointResponse> updateStatus(@PathVariable @NonNull UUID id, @RequestParam boolean active) {
         return ResponseEntity.ok(managementService.updateStatus(id, active));
     }
 
     @PostMapping("/{id}/test")
-    public ResponseEntity<WebhookTestResponse> test(@PathVariable UUID id, @RequestBody WebhookTestRequest request) {
+    public ResponseEntity<WebhookTestResponse> test(@PathVariable @NonNull UUID id, @RequestBody WebhookTestRequest request) {
         return ResponseEntity.ok(managementService.test(id, request));
     }
 }

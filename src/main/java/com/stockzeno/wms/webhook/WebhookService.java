@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HexFormat;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -60,7 +61,8 @@ public class WebhookService {
                                     String resourceType,
                                     UUID resourceId,
                                     Map<String, Object> data) {
-        WebhookEndpoint endpoint = endpointRepository.findById(endpointId)
+        UUID resolvedId = Objects.requireNonNull(endpointId, "endpointId");
+        WebhookEndpoint endpoint = endpointRepository.findById(resolvedId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Webhook endpoint not found"));
         Map<String, Object> payloadData = data == null ? Collections.emptyMap() : data;
         WebhookPayload payload = new WebhookPayload(eventType, resourceType, resourceId, Instant.now(), payloadData);
@@ -83,9 +85,12 @@ public class WebhookService {
             attempts++;
             try {
                 String signature = computeSignature(endpoint.getSecret(), payloadJson);
+                String endpointUrl = Objects.requireNonNull(endpoint.getUrl(), "endpointUrl");
+                WebhookEventType eventType = Objects.requireNonNull(payload.getEventType(), "eventType");
+                MediaType contentType = Objects.requireNonNull(MediaType.APPLICATION_JSON, "contentType");
                 var request = restClient.post()
-                        .uri(endpoint.getUrl())
-                        .header("X-Webhook-Event", payload.getEventType().name());
+                        .uri(endpointUrl)
+                        .header("X-Webhook-Event", eventType.name());
 
                 if (signature != null) {
                     request = request.header("X-Webhook-Signature", signature);
@@ -93,7 +98,7 @@ public class WebhookService {
 
                 var response = payloadJson == null
                         ? request.body(payload).retrieve().toBodilessEntity()
-                        : request.contentType(MediaType.APPLICATION_JSON).body(payloadJson).retrieve().toBodilessEntity();
+                        : request.contentType(contentType).body(payloadJson).retrieve().toBodilessEntity();
                 HttpStatusCode statusCode = response.getStatusCode();
                 lastCode = statusCode.value();
                 if (statusCode.is2xxSuccessful()) {

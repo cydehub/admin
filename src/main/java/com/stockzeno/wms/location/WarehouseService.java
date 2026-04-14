@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,14 +37,14 @@ public class WarehouseService {
     public WarehouseResponse create(WarehouseRequest request) {
         Warehouse warehouse = new Warehouse();
         applyRequest(warehouse, request);
-        return toResponse(warehouseRepository.save(warehouse));
+        return toResponse(Objects.requireNonNull(warehouseRepository.save(warehouse), "warehouse"));
     }
 
     @Transactional
     public WarehouseResponse update(UUID id, WarehouseRequest request) {
         Warehouse warehouse = resolveWarehouse(id);
         applyRequest(warehouse, request);
-        return toResponse(warehouseRepository.save(warehouse));
+        return toResponse(Objects.requireNonNull(warehouseRepository.save(warehouse), "warehouse"));
     }
 
     @Transactional
@@ -51,9 +52,9 @@ public class WarehouseService {
         warehouseRepository.delete(Objects.requireNonNull(resolveWarehouse(id), "warehouse"));
     }
 
-    private Warehouse resolveWarehouse(UUID id) {
-        return warehouseRepository.findById(Objects.requireNonNull(id, "id"))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Warehouse not found"));
+    private @NonNull Warehouse resolveWarehouse(UUID id) {
+        return Objects.requireNonNull(warehouseRepository.findById(Objects.requireNonNull(id, "id"))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Warehouse not found")), "warehouse");
     }
 
     private void applyRequest(Warehouse warehouse, WarehouseRequest request) {

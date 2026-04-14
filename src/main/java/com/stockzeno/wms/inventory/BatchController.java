@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +36,7 @@ public class BatchController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','STAFF')")
-    public ResponseEntity<BatchResponse> get(@PathVariable UUID id) {
+    public ResponseEntity<BatchResponse> get(@PathVariable @NonNull UUID id) {
         return ResponseEntity.ok(batchService.get(id));
     }
 
@@ -47,14 +48,14 @@ public class BatchController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-    public ResponseEntity<BatchResponse> update(@PathVariable UUID id,
+    public ResponseEntity<BatchResponse> update(@PathVariable @NonNull UUID id,
                                                 @Valid @RequestBody BatchRequest request) {
         return ResponseEntity.ok(batchService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable @NonNull UUID id) {
         batchService.delete(id);
         return ResponseEntity.noContent().build();
     }

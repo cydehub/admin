@@ -8,8 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,7 +35,7 @@ public class WebhookManagementService {
     }
 
     @Transactional(readOnly = true)
-    public WebhookEndpointResponse get(UUID id) {
+    public WebhookEndpointResponse get(@NonNull UUID id) {
         return toResponse(resolveEndpoint(id));
     }
 
@@ -50,7 +52,7 @@ public class WebhookManagementService {
     }
 
     @Transactional
-    public WebhookEndpointResponse update(UUID id, WebhookEndpointRequest request) {
+    public WebhookEndpointResponse update(@NonNull UUID id, WebhookEndpointRequest request) {
         WebhookEndpoint endpoint = resolveEndpoint(id);
         endpoint.setUrl(request.getUrl().trim());
         if (request.getSecret() != null) {
@@ -66,14 +68,14 @@ public class WebhookManagementService {
     }
 
     @Transactional
-    public WebhookEndpointResponse updateStatus(UUID id, boolean active) {
+    public WebhookEndpointResponse updateStatus(@NonNull UUID id, boolean active) {
         WebhookEndpoint endpoint = resolveEndpoint(id);
         endpoint.setActive(active);
         return toResponse(endpointRepository.save(endpoint));
     }
 
     @Transactional
-    public WebhookTestResponse test(UUID id, WebhookTestRequest request) {
+    public WebhookTestResponse test(@NonNull UUID id, WebhookTestRequest request) {
         WebhookEventType eventType = request.getEventType() == null ? WebhookEventType.STOCK_IN : request.getEventType();
         String resourceType = request.getResourceType() == null || request.getResourceType().isBlank()
                 ? "test"
@@ -88,8 +90,8 @@ public class WebhookManagementService {
         );
     }
 
-    private WebhookEndpoint resolveEndpoint(UUID id) {
-        return endpointRepository.findById(id)
+    private WebhookEndpoint resolveEndpoint(@NonNull UUID id) {
+        return endpointRepository.findById(Objects.requireNonNull(id, "id"))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Webhook endpoint not found"));
     }
 
