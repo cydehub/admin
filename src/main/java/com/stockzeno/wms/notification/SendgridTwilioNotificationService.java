@@ -10,12 +10,11 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import java.io.IOException;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(name = "stockzeno.notifications.enabled", havingValue = "true")
-@ConditionalOnProperty(name = "stockzeno.notifications.provider", havingValue = "sendgrid", matchIfMissing = true)
+@ConditionalOnExpression("${stockzeno.notifications.enabled:true} && '${stockzeno.notifications.provider:sendgrid}' == 'sendgrid'")
 public class SendgridTwilioNotificationService implements NotificationService {
 
     private final NotificationProperties properties;

@@ -1,14 +1,13 @@
 package com.stockzeno.wms.notification;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(name = "stockzeno.notifications.enabled", havingValue = "true")
-@ConditionalOnProperty(name = "stockzeno.notifications.provider", havingValue = "smtp")
+@ConditionalOnExpression("${stockzeno.notifications.enabled:true} && '${stockzeno.notifications.provider:sendgrid}' == 'smtp'")
 public class SmtpNotificationService implements NotificationService {
 
     private final JavaMailSender mailSender;
