@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @ConditionalOnProperty(name = "stockzeno.notifications.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "stockzeno.notifications.provider", havingValue = "sendgrid", matchIfMissing = true)
 public class SendgridTwilioNotificationService implements NotificationService {
 
     private final NotificationProperties properties;

@@ -78,6 +78,7 @@ stockzeno:
     max-attempts: ${WEBHOOK_MAX_ATTEMPTS:3}
   notifications:
     enabled: ${NOTIFY_ENABLED:true}
+    provider: ${NOTIFY_PROVIDER:sendgrid}
     email-to: ${NOTIFY_EMAIL_TO:}
     sms-to: ${NOTIFY_SMS_TO:}
     email-from: ${NOTIFY_EMAIL_FROM:}
