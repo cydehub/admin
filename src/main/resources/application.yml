@@ -17,6 +17,7 @@ spring:
     password: ${DB_PASSWORD:stockzeno}
   flyway:
     baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:true}
+    baseline-version: ${FLYWAY_BASELINE_VERSION:0}
   jpa:
     hibernate:
       ddl-auto: validate
