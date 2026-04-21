@@ -148,7 +148,7 @@ const ensureTone = (product, index) => ({
 
 const normalizeProduct = (product, index) => {
   const normalized = {
-    id: product.id || `${slugify(product.category)}-${slugify(product.name)}-${Date.now().toString(36)}`,
+    id: product.id || `${slugify(product.category)}-${slugify(product.name)}-${Date.now().toString(36)}-${index}`,
     name: product.name || "Untitled product",
     category: product.category || "General",
     price: Number(product.price) || 0,

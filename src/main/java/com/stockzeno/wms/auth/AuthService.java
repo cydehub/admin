@@ -174,10 +174,10 @@ public class AuthService {
         }
         String verifyUrl = baseUrl + "/verify.html?token=" + token;
         String body = String.format(
-                "Welcome to Stockzeno WMS!%n%nVerify your email to activate your account:%n%s%n%nThis link expires in 24 hours.",
+                "Welcome to Cydestore.ke!%n%nVerify your email to activate your account:%n%s%n%nThis link expires in 24 hours.",
                 verifyUrl
         );
-        notificationService.sendEmail(new EmailNotificationRequest(user.getEmail(), "Verify your Stockzeno account", body));
+        notificationService.sendEmail(new EmailNotificationRequest(user.getEmail(), "Verify your Cydestore account", body));
     }
 
     private AuthResponse buildResponse(User user, String accessToken, String refreshToken) {

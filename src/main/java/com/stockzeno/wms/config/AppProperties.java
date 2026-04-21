@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "stockzeno.app")
 public class AppProperties {
 
-    private String frontendBaseUrl = "http://localhost:8080";
+    private String frontendBaseUrl = "http://cydestore.netlify.app";
 
     public String getFrontendBaseUrl() {
         return frontendBaseUrl;

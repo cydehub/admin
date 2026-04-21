@@ -50,7 +50,7 @@ const setCartCount = (value) => {
 };
 
 const getCategories = () => {
-  const categories = new Set(catalogProducts.map((product) => product.category));
+  const categories = new Set(catalogProducts.map((product) => product.category || "General"));
   return ["All", ...categories];
 };
 
@@ -73,10 +73,13 @@ const renderProducts = () => {
   }
   const query = catalogState.searchQuery.toLowerCase();
   const filtered = catalogProducts.filter((product) => {
-    const matchesCategory = catalogState.activeCategory === "All" || product.category === catalogState.activeCategory;
+    const category = product.category || "General";
+    const name = product.name || "";
+    const specs = product.specs || "";
+    const matchesCategory = catalogState.activeCategory === "All" || category === catalogState.activeCategory;
     const matchesQuery = !query
-      || product.name.toLowerCase().includes(query)
-      || product.specs.toLowerCase().includes(query);
+      || name.toLowerCase().includes(query)
+      || specs.toLowerCase().includes(query);
     return matchesCategory && matchesQuery;
   });
 
@@ -89,23 +92,27 @@ const renderProducts = () => {
     .map((product) => {
       const hasImage = Boolean(product.image);
       const tone = product.tone ? `tone-${product.tone}` : "tone-1";
+      const name = product.name || "Untitled product";
+      const specs = product.specs || "";
+      const category = product.category || "General";
+      const badge = product.badge || "Featured";
       const price = Number.isFinite(product.price) ? formatPrice(product.price) : "KSh --";
       const rating = Number.isFinite(product.rating) ? product.rating.toFixed(1) : "4.5";
       return `
         <article class="product-card">
           <div class="product-media ${tone} ${hasImage ? "has-image" : ""}">
-            ${hasImage ? `<img src="${product.image}" alt="${product.name}" loading="lazy" />` : ""}
-            <span>${product.category}</span>
+            ${hasImage ? `<img src="${product.image}" alt="${name}" loading="lazy" />` : ""}
+            <span>${category}</span>
           </div>
           <div class="product-meta">
-            <div class="product-title">${product.name}</div>
-            <div class="product-sub">${product.specs}</div>
+            <div class="product-title">${name}</div>
+            <div class="product-sub">${specs}</div>
             <div class="product-price">${price}</div>
             <div class="product-actions">
               <span class="rating-pill">★ ${rating}</span>
               <button class="btn ghost small" type="button" data-add-to-cart="${product.id}">Add to cart</button>
             </div>
-            <span class="tag">${product.badge}</span>
+            <span class="tag">${badge}</span>
           </div>
         </article>
       `;

@@ -61,7 +61,7 @@ springdoc:
 
 stockzeno:
   app:
-    frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:8080}
+    frontend-base-url: ${FRONTEND_BASE_URL:http://cydestore.netlify.app}
   security:
     jwt:
       issuer: ${JWT_ISSUER:stockzeno}
