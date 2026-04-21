@@ -14,6 +14,45 @@ const authError = document.getElementById("authError");
 const statusBanner = document.getElementById("statusBanner");
 const userEmail = document.getElementById("userEmail");
 const userRoles = document.getElementById("userRoles");
+const authActionButton = document.querySelector("[data-action='logout']");
+const guestContinueButton = document.getElementById("guestContinue");
+
+const guestNotice = "Guest mode enabled. Sign in to create or edit data.";
+
+const demoData = {
+  products: [
+    { sku: "ZEN-100", name: "Zen Capsules", unitOfMeasure: "EA" },
+    { sku: "ZEN-220", name: "Stockzeno Sensor", unitOfMeasure: "EA" },
+    { sku: "ZEN-310", name: "Flow Pack", unitOfMeasure: "BOX" },
+    { sku: "ZEN-440", name: "Inventory Tags", unitOfMeasure: "PK" },
+  ],
+  batches: [
+    { batchCode: "B-2401", productSku: "ZEN-100", expiryDate: "2026-05-12", status: "ACTIVE" },
+    { batchCode: "B-2407", productSku: "ZEN-220", expiryDate: "2026-04-28", status: "ACTIVE" },
+    { batchCode: "B-2419", productSku: "ZEN-310", expiryDate: "2026-06-03", status: "HOLD" },
+    { batchCode: "B-2425", productSku: "ZEN-440", expiryDate: "2026-05-22", status: "ACTIVE" },
+  ],
+  warehouses: [
+    { name: "Lagos Central", active: true },
+    { name: "Abuja Hub", active: true },
+    { name: "Port Harcourt", active: false },
+  ],
+  webhooks: [
+    { url: "https://hooks.stockzeno.dev/low-stock", eventTypes: ["LOW_STOCK"], active: true },
+    { url: "https://hooks.stockzeno.dev/expiry", eventTypes: ["EXPIRY_WARNING"], active: true },
+  ],
+  audits: [
+    { createdAt: new Date().toISOString(), quantityDelta: -12, reasonCode: "PICK" },
+    { createdAt: new Date(Date.now() - 86_400_000).toISOString(), quantityDelta: 45, reasonCode: "RECEIVE" },
+    { createdAt: new Date(Date.now() - 172_800_000).toISOString(), quantityDelta: -6, reasonCode: "ADJUST" },
+  ],
+  suggestions: [
+    { sku: "ZEN-100", availableQuantity: 12, reorderPoint: 50, shouldReorder: true },
+    { sku: "ZEN-220", availableQuantity: 140, reorderPoint: 80, shouldReorder: false },
+    { sku: "ZEN-310", availableQuantity: 22, reorderPoint: 60, shouldReorder: true },
+    { sku: "ZEN-440", availableQuantity: 70, reorderPoint: 45, shouldReorder: false },
+  ],
+};
 
 const showBanner = (message, type = "info") => {
   if (!statusBanner) {
@@ -57,11 +96,11 @@ const apiFetch = async (path, options = {}) => {
   return response.json();
 };
 
-const safeFetch = async (path, fallback = []) => {
+const safeFetch = async (path, fallback = [], allowUnauthorized = false) => {
   try {
     return await apiFetch(path);
   } catch (error) {
-    if (error.message === "unauthorized") {
+    if (error.message === "unauthorized" && !allowUnauthorized) {
       throw error;
     }
     return fallback;
@@ -75,6 +114,39 @@ const setUserInfo = () => {
   if (userRoles) {
     userRoles.textContent = state.roles.length ? state.roles.join(", ") : "Viewer";
   }
+};
+
+const setFormEnabled = (formId, enabled) => {
+  const form = document.getElementById(formId);
+  if (!form) {
+    return;
+  }
+  form.querySelectorAll("input, button, select, textarea").forEach((field) => {
+    field.disabled = !enabled;
+  });
+};
+
+const syncAuthUi = () => {
+  const isGuest = !state.accessToken;
+  if (authActionButton) {
+    authActionButton.textContent = isGuest ? "Sign in" : "Logout";
+  }
+  setFormEnabled("productForm", !isGuest);
+  setFormEnabled("batchForm", !isGuest);
+  setFormEnabled("warehouseForm", !isGuest);
+  if (isGuest) {
+    showBanner(guestNotice, "info");
+  }
+};
+
+const requireAuth = () => {
+  if (state.accessToken) {
+    return true;
+  }
+  showBanner("Sign in to perform this action.", "error");
+  toggleAuthOverlay(true);
+  setAuthMode("login");
+  return false;
 };
 
 const toggleAuthOverlay = (show) => {
@@ -104,6 +176,7 @@ const handleLogin = async (payload) => {
   localStorage.setItem("userEmail", state.email);
   localStorage.setItem("userRoles", JSON.stringify(state.roles));
   setUserInfo();
+  syncAuthUi();
   toggleAuthOverlay(false);
   await loadDashboard();
 };
@@ -123,6 +196,7 @@ const handleRegister = async (payload) => {
     localStorage.setItem("userEmail", state.email);
     localStorage.setItem("userRoles", JSON.stringify(state.roles));
     setUserInfo();
+    syncAuthUi();
     toggleAuthOverlay(false);
     await loadDashboard();
     return;
@@ -162,17 +236,18 @@ const renderChart = (containerId, items) => {
 };
 
 const loadDashboard = async () => {
+  const isGuest = !state.accessToken;
   hideBanner();
   try {
     const [products, batches, warehouses] = await Promise.all([
-      apiFetch("/catalog/products"),
-      apiFetch("/inventory/batches"),
-      apiFetch("/locations/warehouses"),
+      safeFetch("/catalog/products", demoData.products, isGuest),
+      safeFetch("/inventory/batches", demoData.batches, isGuest),
+      safeFetch("/locations/warehouses", demoData.warehouses, isGuest),
     ]);
     const [webhooks, audits, suggestions] = await Promise.all([
-      safeFetch("/webhooks", []),
-      safeFetch("/audit/adjustments?limit=20", []),
-      safeFetch("/analytics/reorder-suggestions", []),
+      safeFetch("/webhooks", demoData.webhooks, isGuest),
+      safeFetch("/audit/adjustments?limit=20", demoData.audits, isGuest),
+      safeFetch("/analytics/reorder-suggestions", demoData.suggestions, isGuest),
     ]);
 
     const expiringSoon = batches.filter((batch) => {
@@ -311,10 +386,15 @@ const loadDashboard = async () => {
         percent: Math.round((item.value / auditMax) * 100),
       }))
     );
+    if (isGuest) {
+      showBanner(guestNotice, "info");
+    }
   } catch (error) {
     if (error.message === "unauthorized") {
-      toggleAuthOverlay(true);
-      showBanner("Your session expired. Please sign in again.", "error");
+      if (!isGuest) {
+        toggleAuthOverlay(true);
+        showBanner("Your session expired. Please sign in again.", "error");
+      }
       return;
     }
     showBanner(`Unable to load dashboard data: ${error.message}`, "error");
@@ -354,6 +434,9 @@ const bindForms = () => {
 
   document.getElementById("productForm").addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (!requireAuth()) {
+      return;
+    }
     const form = event.target;
     try {
       await apiFetch("/catalog/products", {
@@ -374,6 +457,9 @@ const bindForms = () => {
 
   document.getElementById("batchForm").addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (!requireAuth()) {
+      return;
+    }
     const form = event.target;
     try {
       await apiFetch("/inventory/batches", {
@@ -396,6 +482,9 @@ const bindForms = () => {
 
   document.getElementById("warehouseForm").addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (!requireAuth()) {
+      return;
+    }
     const form = event.target;
     try {
       await apiFetch("/locations/warehouses", {
@@ -417,30 +506,46 @@ const bindForms = () => {
     tab.addEventListener("click", () => setAuthMode(tab.dataset.authTab));
   });
 
-  document.querySelector("[data-action='logout']").addEventListener("click", () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userRoles");
-    state.accessToken = null;
-    state.refreshToken = null;
-    state.email = null;
-    state.roles = [];
-    setUserInfo();
-    toggleAuthOverlay(true);
-  });
+  if (authActionButton) {
+    authActionButton.addEventListener("click", async () => {
+      if (!state.accessToken) {
+        toggleAuthOverlay(true);
+        setAuthMode("login");
+        return;
+      }
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("userEmail");
+      localStorage.removeItem("userRoles");
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.email = null;
+      state.roles = [];
+      setUserInfo();
+      syncAuthUi();
+      toggleAuthOverlay(false);
+      await loadDashboard();
+    });
+  }
+
+  if (guestContinueButton) {
+    guestContinueButton.addEventListener("click", () => {
+      toggleAuthOverlay(false);
+      showBanner(guestNotice, "info");
+    });
+  }
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
   if (typeof window.initThemeToggle === "function") {
     window.initThemeToggle();
   }
+  if (typeof window.initMobileNav === "function") {
+    window.initMobileNav();
+  }
   setUserInfo();
   bindForms();
-  if (state.accessToken) {
-    toggleAuthOverlay(false);
-    await loadDashboard();
-  } else {
-    toggleAuthOverlay(true);
-  }
+  syncAuthUi();
+  toggleAuthOverlay(false);
+  await loadDashboard();
 });

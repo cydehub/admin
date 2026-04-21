@@ -10,7 +10,7 @@
     <script defer src="/js/app.js"></script>
   </head>
   <body class="dashboard">
-    <div class="auth-overlay" id="authOverlay">
+    <div class="auth-overlay is-hidden" id="authOverlay">
       <div class="auth-card">
         <h2>Welcome to Stockzeno</h2>
         <p>Sign in to your workspace or create a new account.</p>
@@ -31,6 +31,7 @@
           <button class="btn primary" type="submit">Create account</button>
         </form>
         <div id="authError" class="status-banner" style="display: none;"></div>
+        <button class="btn ghost" type="button" id="guestContinue">Continue as guest</button>
       </div>
     </div>
 
@@ -60,9 +61,19 @@
 
       <main class="main">
         <div class="topbar">
-          <div class="search">
-            <span>Search</span>
-            <input type="text" placeholder="Search SKUs, batches, locations" />
+          <div class="topbar-left">
+            <button class="nav-toggle" type="button" data-nav-toggle="dashboardNav" aria-label="Open menu" aria-expanded="false">
+              <span>Menu</span>
+              <span class="nav-toggle-lines">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </button>
+            <div class="search">
+              <span>Search</span>
+              <input type="text" placeholder="Search SKUs, batches, locations" />
+            </div>
           </div>
           <div class="topbar-actions">
             <button class="theme-toggle" data-theme-toggle><span>Dark mode</span></button>
@@ -236,6 +247,34 @@
           </table>
         </section>
       </main>
+    </div>
+
+    <div class="mobile-nav" id="dashboardNav" aria-hidden="true">
+      <div class="mobile-nav-scrim" data-nav-close></div>
+      <div class="mobile-nav-panel" role="dialog" aria-modal="true">
+        <div class="mobile-nav-header">
+          <div class="nav-logo">
+            <div class="mark"></div>
+            Stockzeno
+          </div>
+          <button class="nav-close" type="button" data-nav-close>Close</button>
+        </div>
+        <nav class="mobile-nav-links">
+          <a data-nav-link href="#">Dashboard</a>
+          <a data-nav-link href="#products">Products</a>
+          <a data-nav-link href="#batches">Batches</a>
+          <a data-nav-link href="#locations">Locations</a>
+          <a data-nav-link href="#analytics">Analytics</a>
+          <a data-nav-link href="#webhooks">Webhooks</a>
+          <a data-nav-link href="#audit">Audit</a>
+          <a data-nav-link href="#reorder">Reorder</a>
+          <a data-nav-link href="https://admin-production-8797.up.railway.app/docs" target="_blank" rel="noreferrer">API Docs</a>
+        </nav>
+        <div class="mobile-nav-actions">
+          <button class="theme-toggle" data-theme-toggle><span>Dark mode</span></button>
+          <a class="btn primary" href="/">Landing</a>
+        </div>
+      </div>
     </div>
   </body>
 </html>
