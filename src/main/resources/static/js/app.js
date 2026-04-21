@@ -5,8 +5,8 @@ const state = {
   roles: JSON.parse(localStorage.getItem("userRoles") || "[]"),
 };
 
-const apiBase = (window.STOCKZENO_API_BASE
-  || document.querySelector('meta[name="stockzeno-api-base"]')?.content
+const apiBase = (window.CYDESTORE_API_BASE
+  || document.querySelector('meta[name="cydestore-api-base"]')?.content
   || "").replace(/\/$/, "");
 
 const authOverlay = document.getElementById("authOverlay");
@@ -70,7 +70,7 @@ const safeFetch = async (path, fallback = []) => {
 
 const setUserInfo = () => {
   if (userEmail) {
-    userEmail.textContent = state.email || "guest@stockzeno.app";
+    userEmail.textContent = state.email || "guest@cydestore.ke";
   }
   if (userRoles) {
     userRoles.textContent = state.roles.length ? state.roles.join(", ") : "Viewer";

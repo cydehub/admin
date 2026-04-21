@@ -4,128 +4,10 @@ const catalogState = {
   cartCount: 0,
 };
 
-const catalogProducts = [
-  {
-    id: "phone-galaxy-x5",
-    name: "Galaxy Nova X5",
-    category: "Phones",
-    price: 48900,
-    rating: 4.8,
-    specs: "6.6\" AMOLED · 128GB",
-    badge: "Hot drop",
-    tone: 1,
-  },
-  {
-    id: "phone-iphone-15",
-    name: "iPhone 15 Pro",
-    category: "Phones",
-    price: 164000,
-    rating: 4.9,
-    specs: "A17 Pro · 256GB",
-    badge: "Top rated",
-    tone: 2,
-  },
-  {
-    id: "phone-infinix-note",
-    name: "Infinix Note 40",
-    category: "Phones",
-    price: 26900,
-    rating: 4.6,
-    specs: "120Hz · 256GB",
-    badge: "Best value",
-    tone: 3,
-  },
-  {
-    id: "phone-pixel-8",
-    name: "Pixel 8",
-    category: "Phones",
-    price: 102000,
-    rating: 4.7,
-    specs: "Tensor G3 · 128GB",
-    badge: "Clean Android",
-    tone: 4,
-  },
-  {
-    id: "laptop-macbook-air",
-    name: "MacBook Air 13\"",
-    category: "Laptops",
-    price: 162000,
-    rating: 4.9,
-    specs: "M2 · 8GB RAM · 256GB",
-    badge: "Creator pick",
-    tone: 2,
-  },
-  {
-    id: "laptop-hp-envy",
-    name: "HP Envy 14",
-    category: "Laptops",
-    price: 115500,
-    rating: 4.6,
-    specs: "Intel i7 · 16GB RAM",
-    badge: "Work ready",
-    tone: 1,
-  },
-  {
-    id: "laptop-lenovo-legion",
-    name: "Lenovo Legion 5",
-    category: "Laptops",
-    price: 138900,
-    rating: 4.7,
-    specs: "RTX 4060 · 512GB",
-    badge: "Gaming rig",
-    tone: 3,
-  },
-  {
-    id: "laptop-dell-xps",
-    name: "Dell XPS 13",
-    category: "Laptops",
-    price: 148000,
-    rating: 4.8,
-    specs: "OLED · 512GB SSD",
-    badge: "Premium",
-    tone: 4,
-  },
-  {
-    id: "accessory-pulsepods",
-    name: "PulsePods Pro",
-    category: "Accessories",
-    price: 9600,
-    rating: 4.5,
-    specs: "ANC · 30hr battery",
-    badge: "Bundle deal",
-    tone: 1,
-  },
-  {
-    id: "accessory-jbl-flip",
-    name: "JBL Flip 7",
-    category: "Accessories",
-    price: 18500,
-    rating: 4.6,
-    specs: "Waterproof · 12hr play",
-    badge: "Party ready",
-    tone: 2,
-  },
-  {
-    id: "accessory-anker",
-    name: "Anker 20K Power Bank",
-    category: "Accessories",
-    price: 6200,
-    rating: 4.7,
-    specs: "Fast charge · USB-C",
-    badge: "Travel essential",
-    tone: 3,
-  },
-  {
-    id: "wearable-fitpulse",
-    name: "FitPulse Watch 3",
-    category: "Wearables",
-    price: 12900,
-    rating: 4.4,
-    specs: "AMOLED · 7-day battery",
-    badge: "New arrival",
-    tone: 4,
-  },
-];
+let catalogProducts = [];
+if (typeof loadCatalogProducts === "function") {
+  catalogProducts = loadCatalogProducts();
+}
 
 const categoryFilters = document.getElementById("categoryFilters");
 const productGrid = document.getElementById("productGrid");
@@ -136,6 +18,16 @@ const cartCounts = Array.from(document.querySelectorAll("[data-cart-count]"));
 let bannerTimeout;
 
 const formatPrice = (value) => `KSh ${value.toLocaleString("en-KE")}`;
+
+const refreshCatalog = () => {
+  if (typeof loadCatalogProducts === "function") {
+    catalogProducts = loadCatalogProducts();
+  }
+  const categories = getCategories();
+  if (!categories.includes(catalogState.activeCategory)) {
+    catalogState.activeCategory = "All";
+  }
+};
 
 const showBanner = (message) => {
   if (!statusBanner) {
@@ -195,17 +87,22 @@ const renderProducts = () => {
 
   productGrid.innerHTML = filtered
     .map((product) => {
+      const hasImage = Boolean(product.image);
+      const tone = product.tone ? `tone-${product.tone}` : "tone-1";
+      const price = Number.isFinite(product.price) ? formatPrice(product.price) : "KSh --";
+      const rating = Number.isFinite(product.rating) ? product.rating.toFixed(1) : "4.5";
       return `
         <article class="product-card">
-          <div class="product-media tone-${product.tone}">
+          <div class="product-media ${tone} ${hasImage ? "has-image" : ""}">
+            ${hasImage ? `<img src="${product.image}" alt="${product.name}" loading="lazy" />` : ""}
             <span>${product.category}</span>
           </div>
           <div class="product-meta">
             <div class="product-title">${product.name}</div>
             <div class="product-sub">${product.specs}</div>
-            <div class="product-price">${formatPrice(product.price)}</div>
+            <div class="product-price">${price}</div>
             <div class="product-actions">
-              <span class="rating-pill">★ ${product.rating}</span>
+              <span class="rating-pill">★ ${rating}</span>
               <button class="btn ghost small" type="button" data-add-to-cart="${product.id}">Add to cart</button>
             </div>
             <span class="tag">${product.badge}</span>
@@ -262,7 +159,17 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof window.initMobileNav === "function") {
     window.initMobileNav();
   }
+  refreshCatalog();
   renderFilters();
   renderProducts();
   bindCatalogEvents();
+});
+
+window.addEventListener("storage", (event) => {
+  if (event.key && event.key !== "cydestoreCatalog") {
+    return;
+  }
+  refreshCatalog();
+  renderFilters();
+  renderProducts();
 });

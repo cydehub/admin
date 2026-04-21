@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cydestore.ke | Admin</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script defer src="/js/theme.js"></script>
+    <script defer src="/js/catalog-data.js"></script>
+    <script defer src="/js/admin.js"></script>
+  </head>
+  <body class="admin">
+    <header class="store-header">
+      <div class="container navbar">
+        <div class="nav-logo">
+          <div class="mark"></div>
+          Cydestore.ke
+        </div>
+        <nav class="nav-links">
+          <a href="/">Home</a>
+          <a href="/app.html">Storefront</a>
+          <a href="/admin.html" aria-current="page">Admin</a>
+        </nav>
+        <div class="nav-actions">
+          <button class="theme-toggle" data-theme-toggle><span>Dark mode</span></button>
+          <a class="btn ghost" href="/app.html">View store</a>
+        </div>
+        <button class="nav-toggle" type="button" data-nav-toggle="adminNav" aria-label="Open menu" aria-expanded="false">
+          <span>Menu</span>
+          <span class="nav-toggle-lines">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <div id="statusBanner" class="status-banner" style="display: none;"></div>
+
+    <main class="admin-main">
+      <section class="admin-hero">
+        <div class="container admin-hero-grid">
+          <div>
+            <div class="badge">Catalog control</div>
+            <h1 class="hero-title">Admin studio for your storefront</h1>
+            <p class="hero-sub">
+              Update product names, prices, categories, and images. Changes are saved to this browser and show up on the
+              storefront instantly.
+            </p>
+          </div>
+          <div class="card admin-tip">
+            <h3>Tips</h3>
+            <ul>
+              <li>Upload a clear square image for best results.</li>
+              <li>Use ratings between 3.5 and 5.0 for realistic listings.</li>
+              <li>Click a product card to edit it quickly.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-section">
+        <div class="container admin-grid">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div>
+                <h2>Product editor</h2>
+                <p class="muted">Add new items or edit existing catalog products.</p>
+              </div>
+              <button class="btn ghost small" type="button" id="resetCatalog">Reset defaults</button>
+            </div>
+
+            <form id="adminProductForm" class="admin-form">
+              <input type="hidden" id="productId" />
+              <div class="admin-form-grid">
+                <label class="field">
+                  <span>Product name</span>
+                  <input id="productName" type="text" placeholder="e.g. Samsung Galaxy A55" required />
+                </label>
+                <label class="field">
+                  <span>Category</span>
+                  <input id="productCategory" type="text" list="categoryOptions" placeholder="Phones" required />
+                  <datalist id="categoryOptions"></datalist>
+                </label>
+                <label class="field">
+                  <span>Price (KSh)</span>
+                  <input id="productPrice" type="number" min="0" step="1" placeholder="45000" required />
+                </label>
+                <label class="field">
+                  <span>Rating</span>
+                  <input id="productRating" type="number" min="0" max="5" step="0.1" placeholder="4.7" />
+                </label>
+              </div>
+
+              <label class="field">
+                <span>Key specs</span>
+                <input id="productSpecs" type="text" placeholder='"6.6" AMOLED · 128GB"' />
+              </label>
+
+              <label class="field">
+                <span>Badge label</span>
+                <input id="productBadge" type="text" placeholder="Hot drop" />
+              </label>
+
+              <div class="admin-image-row">
+                <div class="image-preview" id="imagePreview">
+                  <span>No image selected</span>
+                </div>
+                <div class="image-actions">
+                  <label class="field">
+                    <span>Product image</span>
+                    <input id="productImage" type="file" accept="image/*" />
+                  </label>
+                  <button class="btn ghost small" type="button" id="clearImage">Remove image</button>
+                </div>
+              </div>
+
+              <div class="admin-actions">
+                <button class="btn primary" type="submit" id="saveProduct">Save product</button>
+                <button class="btn ghost" type="button" id="clearForm">Clear form</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div>
+                <h2>Catalog items</h2>
+                <p class="muted">Tap edit to update a product or remove an item from the storefront.</p>
+              </div>
+            </div>
+            <div class="admin-item-list" id="adminProductList"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="mobile-nav" id="adminNav" aria-hidden="true">
+      <div class="mobile-nav-scrim" data-nav-close></div>
+      <div class="mobile-nav-panel" role="dialog" aria-modal="true">
+        <div class="mobile-nav-header">
+          <div class="nav-logo">
+            <div class="mark"></div>
+            Cydestore.ke
+          </div>
+          <button class="nav-close" type="button" data-nav-close>Close</button>
+        </div>
+        <nav class="mobile-nav-links">
+          <a data-nav-link href="/">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 12l8-8 8 8"/><path d="M6 10v10h12V10"/></svg>
+            </span>
+            Home
+          </a>
+          <a data-nav-link href="/app.html">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M8 10h8"/></svg>
+            </span>
+            Storefront
+          </a>
+          <a data-nav-link href="/admin.html">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 4h7v7H4z"/><path d="M13 4h7v4h-7z"/><path d="M13 10h7v10h-7z"/><path d="M4 13h7v7H4z"/></svg>
+            </span>
+            Admin
+          </a>
+        </nav>
+        <div class="mobile-nav-actions">
+          <button class="theme-toggle" data-theme-toggle><span>Dark mode</span></button>
+          <a class="btn primary" href="/app.html">View store</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

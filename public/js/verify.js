@@ -1,6 +1,6 @@
 const statusEl = document.getElementById("verifyStatus");
-const apiBase = (window.STOCKZENO_API_BASE
-  || document.querySelector('meta[name="stockzeno-api-base"]')?.content
+const apiBase = (window.CYDESTORE_API_BASE
+  || document.querySelector('meta[name="cydestore-api-base"]')?.content
   || "").replace(/\/$/, "");
 
 const setStatus = (message) => {
