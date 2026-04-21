@@ -3,239 +3,252 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="stockzeno-api-base" content="https://admin-production-8797.up.railway.app" />
-    <title>Stockzeno WMS Console</title>
+    <title>Cydestore.ke | Storefront</title>
     <link rel="stylesheet" href="/css/styles.css" />
     <script defer src="/js/theme.js"></script>
     <script defer src="/js/app.js"></script>
   </head>
-  <body class="dashboard">
-    <div class="auth-overlay" id="authOverlay">
-      <div class="auth-card">
-        <h2>Welcome to Stockzeno</h2>
-        <p>Sign in to your workspace or create a new account.</p>
-        <div class="auth-tabs">
-          <button type="button" class="active" data-auth-tab="login">Login</button>
-          <button type="button" data-auth-tab="register">Create Account</button>
-        </div>
-        <form id="loginForm">
-          <input type="email" name="email" placeholder="Email" required />
-          <input type="password" name="password" placeholder="Password" required />
-          <button class="btn primary" type="submit">Sign in</button>
-        </form>
-        <form id="registerForm" class="hidden">
-          <input type="text" name="firstName" placeholder="First name" required />
-          <input type="text" name="lastName" placeholder="Last name" required />
-          <input type="email" name="email" placeholder="Email" required />
-          <input type="password" name="password" placeholder="Password (8+ chars)" required />
-          <button class="btn primary" type="submit">Create account</button>
-        </form>
-        <div id="authError" class="status-banner" style="display: none;"></div>
-      </div>
-    </div>
-
-    <div class="app-shell">
-      <aside class="sidebar">
+  <body class="storefront">
+    <header class="store-header">
+      <div class="container navbar">
         <div class="nav-logo">
           <div class="mark"></div>
-          Stockzeno
+          Cydestore.ke
         </div>
-        <nav>
-          <a class="active" href="#">Dashboard</a>
-          <a href="#products">Products</a>
-          <a href="#batches">Batches</a>
-          <a href="#locations">Locations</a>
-          <a href="#analytics">Analytics</a>
-          <a href="#webhooks">Webhooks</a>
-          <a href="#audit">Audit</a>
-          <a href="#reorder">Reorder</a>
-          <a href="https://admin-production-8797.up.railway.app/docs" target="_blank" rel="noreferrer">API Docs</a>
+        <nav class="nav-links">
+          <a href="#catalog">Catalog</a>
+          <a href="#categories">Categories</a>
+          <a href="#collections">Collections</a>
+          <a href="#support">Support</a>
         </nav>
-        <div class="download-card">
-          <h4>Mobile insights</h4>
-          <p>Get alerts on the go with Stockzeno mobile.</p>
-          <button class="btn ghost" type="button">Download</button>
+        <div class="nav-actions">
+          <button class="theme-toggle" data-theme-toggle><span>Dark mode</span></button>
+          <a class="btn ghost" href="/">Home</a>
+          <button class="btn primary" type="button" data-cart-button>
+            Cart <span class="cart-count" data-cart-count>0</span>
+          </button>
         </div>
-      </aside>
+        <button class="nav-toggle" type="button" data-nav-toggle="storeNav" aria-label="Open menu" aria-expanded="false">
+          <span>Menu</span>
+          <span class="nav-toggle-lines">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+      </div>
+    </header>
 
-      <main class="main">
-        <div class="topbar">
-          <div class="search">
-            <span>Search</span>
-            <input type="text" placeholder="Search SKUs, batches, locations" />
-          </div>
-          <div class="topbar-actions">
-            <button class="theme-toggle" data-theme-toggle><span>Dark mode</span></button>
-            <a class="btn ghost" href="/">Landing</a>
-            <div class="user-pill">
-              <div>
-                <div id="userEmail">guest@stockzeno.app</div>
-                <small id="userRoles">Viewer</small>
+    <div id="statusBanner" class="status-banner" style="display: none;"></div>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-shell store-hero">
+          <div class="hero-glow"></div>
+          <div class="hero-grid">
+            <div>
+              <div class="badge">Cydestore.ke marketplace</div>
+              <h1 class="hero-title">Your one-stop tech store for phones, laptops, and accessories.</h1>
+              <p class="hero-sub">
+                Discover verified devices, transparent pricing, and fast delivery across Kenya. From flagship phones to
+                budget essentials, everything is curated for quality.
+              </p>
+              <div class="hero-actions">
+                <a class="btn primary" href="#catalog">Start shopping</a>
+                <a class="btn ghost" href="#collections">View collections</a>
               </div>
-              <button class="btn ghost" data-action="logout" type="button">Logout</button>
+              <div class="hero-brands">
+                <span>Apple</span>
+                <span>Samsung</span>
+                <span>HP</span>
+                <span>Dell</span>
+                <span>JBL</span>
+              </div>
+            </div>
+            <div class="hero-stack">
+              <div class="card stat-card">
+                <h3>Verified stock</h3>
+                <p>Every item is inspected before it hits your doorstep.</p>
+                <div class="stat-row">
+                  <span>Quality checks</span>
+                  <strong>3-step</strong>
+                </div>
+              </div>
+              <div class="card stat-card">
+                <h3>Nationwide delivery</h3>
+                <p>Same-day Nairobi delivery, next-day nationwide.</p>
+                <div class="stat-row">
+                  <span>Delivery time</span>
+                  <strong>24 hrs</strong>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div id="statusBanner" class="status-banner" style="display: none;"></div>
+      <section class="section" id="categories">
+        <div class="container">
+          <h2>Featured categories</h2>
+          <p>Pick your next upgrade from our most requested departments.</p>
+          <div class="category-grid">
+            <article class="category-card">
+              <h3>Phones</h3>
+              <p>Flagship, mid-range, and budget phones for every need.</p>
+              <span class="tag">Best sellers</span>
+            </article>
+            <article class="category-card">
+              <h3>Laptops</h3>
+              <p>Ultrabooks, gaming laptops, and creator workstations.</p>
+              <span class="tag">Top-rated</span>
+            </article>
+            <article class="category-card">
+              <h3>Accessories</h3>
+              <p>Chargers, earbuds, power banks, and smart add-ons.</p>
+              <span class="tag">Bundle deals</span>
+            </article>
+            <article class="category-card">
+              <h3>Wearables</h3>
+              <p>Smart watches, fitness trackers, and audio gear.</p>
+              <span class="tag">New arrivals</span>
+            </article>
+          </div>
+        </div>
+      </section>
 
-        <section class="grid-metrics">
-          <div class="metric-card highlight">
-            <p>Catalog coverage</p>
-            <div class="metric-value" data-metric="products">0</div>
-            <p>Active SKUs tracked</p>
-          </div>
-          <div class="metric-card">
-            <p>Active batches</p>
-            <div class="metric-value" data-metric="batches">0</div>
-            <p>Lots in motion</p>
-          </div>
-          <div class="metric-card">
-            <p>Low stock alerts</p>
-            <div class="metric-value" data-metric="lowStock">0</div>
-            <p>Reorder candidates</p>
-          </div>
-          <div class="metric-card">
-            <p>Expiring soon</p>
-            <div class="metric-value" data-metric="expiring">0</div>
-            <p>Next 30 days</p>
-          </div>
-          <div class="metric-card">
-            <p>Warehouses mapped</p>
-            <div class="metric-value" data-metric="warehouses">0</div>
-            <p>Locations live</p>
-          </div>
-        </section>
-
-        <section class="panels">
-          <div class="panel">
-            <h3>Recent batches</h3>
-            <table class="data-table" id="batchesTable">
-              <thead>
-                <tr>
-                  <th>Batch</th>
-                  <th>SKU</th>
-                  <th>Expiry</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-
-            <div class="quick-actions" id="products">
-              <div class="form-card">
-                <h4>Create product</h4>
-                <form id="productForm">
-                  <input type="text" name="sku" placeholder="SKU" required />
-                  <input type="text" name="name" placeholder="Name" required />
-                  <input type="text" name="unitOfMeasure" placeholder="Unit (EA)" />
-                  <button class="btn primary" type="submit">Add product</button>
-                </form>
-              </div>
-              <div class="form-card" id="batches">
-                <h4>Create batch</h4>
-                <form id="batchForm">
-                  <input type="text" name="productId" placeholder="Product ID" required />
-                  <input type="text" name="batchCode" placeholder="Batch code" required />
-                  <input type="date" name="manufactureDate" required />
-                  <input type="date" name="expiryDate" required />
-                  <button class="btn primary" type="submit">Add batch</button>
-                </form>
-              </div>
+      <section class="section" id="catalog">
+        <div class="container">
+          <div class="catalog-header">
+            <div>
+              <h2>Shop the catalog</h2>
+              <p>Filter by category or search to find the perfect device.</p>
+            </div>
+            <div class="catalog-search search">
+              <span>Search</span>
+              <input id="catalogSearch" type="text" placeholder="Search phones, laptops, accessories" />
             </div>
           </div>
+          <div class="filter-row" id="categoryFilters"></div>
+          <div class="product-grid" id="productGrid"></div>
+        </div>
+      </section>
 
-          <div class="panel" id="locations">
-            <h3>Location snapshot</h3>
-            <div class="progress-ring" style="--progress: 240deg;">
-              <span id="locationScore">0%</span>
-            </div>
-            <p style="text-align: center;">Coverage across mapped locations.</p>
-            <table class="data-table" id="warehousesTable">
-              <thead>
-                <tr>
-                  <th>Warehouse</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <div class="form-card">
-              <h4>Create warehouse</h4>
-              <form id="warehouseForm">
-                <input type="text" name="code" placeholder="Code" required />
-                <input type="text" name="name" placeholder="Name" required />
-                <button class="btn primary" type="submit">Add warehouse</button>
-              </form>
-            </div>
+      <section class="section" id="collections">
+        <div class="container">
+          <div class="promo-grid">
+            <article class="promo-card">
+              <h3>Student-ready bundles</h3>
+              <p>Affordable laptops, backpacks, and study essentials in one pack.</p>
+              <a class="btn ghost" href="#catalog">Shop bundles</a>
+            </article>
+            <article class="promo-card">
+              <h3>Creator gear</h3>
+              <p>Cameras, audio kits, and laptops tuned for content creators.</p>
+              <a class="btn ghost" href="#catalog">Explore creators</a>
+            </article>
+            <article class="promo-card">
+              <h3>Accessory power deals</h3>
+              <p>Buy 2 accessories and get 10% off.</p>
+              <a class="btn ghost" href="#catalog">View deals</a>
+            </article>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="module-grid" id="analytics">
-          <div class="panel">
-            <h3>Inventory risk radar</h3>
-            <p>Live signals from expiry, reorder, and audit feeds.</p>
-            <div class="analytics-grid">
-              <div class="chart-card">
-                <h4>Expiry window</h4>
-                <div class="chart-bars" id="expiryChart"></div>
-              </div>
-              <div class="chart-card">
-                <h4>Low stock pressure</h4>
-                <div class="chart-bars" id="reorderChart"></div>
-              </div>
-              <div class="chart-card">
-                <h4>Adjustment activity</h4>
-                <div class="chart-bars" id="auditChart"></div>
-              </div>
+      <section class="section" id="support">
+        <div class="container">
+          <h2>Shopping with confidence</h2>
+          <p>Support, warranty, and flexible payment options built in.</p>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h3>Warranty + returns</h3>
+              <p>Each device includes a warranty and 14-day return window.</p>
+            </div>
+            <div class="feature-card">
+              <h3>M-Pesa ready</h3>
+              <p>Pay with M-Pesa, debit cards, or flexible installments.</p>
+            </div>
+            <div class="feature-card">
+              <h3>Expert help</h3>
+              <p>Chat with our experts for device recommendations.</p>
             </div>
           </div>
-          <div class="panel" id="webhooks">
-            <h3>Webhook control</h3>
-            <p>Active endpoints and event coverage.</p>
-            <table class="data-table" id="webhooksTable">
-              <thead>
-                <tr>
-                  <th>URL</th>
-                  <th>Events</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <div class="panel" id="audit">
-            <h3>Audit trail</h3>
-            <p>Recent stock adjustments and reason codes.</p>
-            <table class="data-table" id="auditTable">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Qty</th>
-                  <th>Reason</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </section>
+        </div>
+      </section>
+    </main>
 
-        <section class="panel" id="reorder">
-          <h3>Reorder suggestions</h3>
-          <p>Items below policy thresholds.</p>
-          <table class="data-table" id="reorderTable">
-            <thead>
-              <tr>
-                <th>SKU</th>
-                <th>Available</th>
-                <th>Reorder Point</th>
-                <th>Recommendation</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </section>
-      </main>
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="nav-logo">
+            <div class="mark"></div>
+            Cydestore.ke
+          </div>
+          <p>Your marketplace for phones, laptops, and accessories.</p>
+        </div>
+        <div>
+          <h4>Store</h4>
+          <a href="#catalog">Catalog</a><br />
+          <a href="#categories">Categories</a><br />
+          <a href="#collections">Collections</a>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <a href="#support">Help center</a><br />
+          <a href="/">Back to home</a>
+        </div>
+      </div>
+    </footer>
+
+    <div class="mobile-nav" id="storeNav" aria-hidden="true">
+      <div class="mobile-nav-scrim" data-nav-close></div>
+      <div class="mobile-nav-panel" role="dialog" aria-modal="true">
+        <div class="mobile-nav-header">
+          <div class="nav-logo">
+            <div class="mark"></div>
+            Cydestore.ke
+          </div>
+          <button class="nav-close" type="button" data-nav-close>Close</button>
+        </div>
+        <nav class="mobile-nav-links">
+          <a data-nav-link href="#catalog">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M8 10h8"/></svg>
+            </span>
+            Catalog
+          </a>
+          <a data-nav-link href="#categories">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+            </span>
+            Categories
+          </a>
+          <a data-nav-link href="#collections">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 7h18v6H3z"/><path d="M6 13v6h12v-6"/></svg>
+            </span>
+            Collections
+          </a>
+          <a data-nav-link href="#support">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 1 7 7v4a4 4 0 0 1-4 4h-1"/><path d="M8 21h4"/></svg>
+            </span>
+            Support
+          </a>
+          <a data-nav-link href="/">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 12l8-8 8 8"/><path d="M6 10v10h12V10"/></svg>
+            </span>
+            Home
+          </a>
+        </nav>
+        <div class="mobile-nav-actions">
+          <button class="theme-toggle" data-theme-toggle><span>Dark mode</span></button>
+          <button class="btn ghost" type="button" data-cart-button>
+            Cart <span class="cart-count" data-cart-count>0</span>
+          </button>
+        </div>
+      </div>
     </div>
   </body>
 </html>
